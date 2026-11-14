@@ -1,0 +1,66 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Calculadora de tamaño muestral</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1F3864;--gold:#C99700;--soft:#EAF1F8;--ok:#2E7D32;--okbg:#E8F5E9;--bad:#B23A2E;--badbg:#FDECEA;--ink:#1d2433;--muted:#5b6475;--line:#d5deeb}
+*{box-sizing:border-box}body{margin:0;font-family:'Source Sans 3',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink);background:#fff;line-height:1.5}
+.wrap{max-width:860px;margin:0 auto;padding:20px 18px 28px}
+.kicker{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);font-weight:700}
+h1{font-size:22px;color:var(--navy);margin:4px 0 6px}
+.instr{background:var(--soft);border-left:5px solid var(--gold);padding:10px 14px;border-radius:6px;margin:10px 0 16px;font-size:15px}
+button{font:inherit;cursor:pointer}
+.foot{margin-top:18px;font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:8px}
+.btn{background:var(--navy);color:#fff;border:0;border-radius:8px;padding:9px 16px;font-weight:600}
+.btn:focus-visible,.chip:focus-visible,.opt:focus-visible,.step:focus-visible,.mv:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.btn.sec{background:#fff;color:var(--navy);border:2px solid var(--navy)}
+.live{min-height:22px;margin-top:10px;font-weight:600}
+/* flujo */
+.steps{display:flex;gap:6px;flex-wrap:wrap;align-items:stretch}
+.step{flex:1 1 0;min-width:88px;background:#fff;border:2px solid var(--navy);color:var(--navy);border-radius:10px;padding:10px 8px;text-align:center;font-weight:700;position:relative}
+.step .n{display:block;font-size:12px;color:var(--gold);font-weight:800}
+.step[aria-expanded=true]{background:var(--navy);color:#fff}
+.step.seen:not([aria-expanded=true])::after{content:'✓';position:absolute;top:4px;right:8px;color:var(--ok);font-size:13px}
+.arrow{align-self:center;color:var(--gold);font-weight:900;font-size:18px}
+.panel{margin-top:14px;border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:#fbfcfe}
+.panel h2{margin:0 0 6px;color:var(--navy);font-size:18px}
+.ex{background:#FFF7E0;border-radius:8px;padding:10px 12px;margin-top:8px}
+.ex b{color:#7a5b00}
+.nav{display:flex;gap:8px;justify-content:space-between;margin-top:12px}
+/* ordenar */
+ol.sort{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+ol.sort li{display:flex;align-items:center;gap:10px;border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff}
+ol.sort li .pos{width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex:none}
+ol.sort li .txt{flex:1}
+ol.sort li.ok{border-color:var(--ok);background:var(--okbg)}ol.sort li.bad{border-color:var(--bad);background:var(--badbg)}
+.mv{border:1px solid var(--line);background:#fff;border-radius:6px;width:34px;height:30px;color:var(--navy);font-weight:900}
+.mv:disabled{opacity:.35;cursor:default}
+ol.sort li[draggable=true]{cursor:grab}
+/* clasificar */
+.cards{display:flex;flex-direction:column;gap:10px}
+.card{border:2px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff}
+.card p{margin:0 0 8px}
+.opts{display:flex;gap:8px;flex-wrap:wrap}
+.opt{border:2px solid var(--navy);background:#fff;color:var(--navy);border-radius:999px;padding:6px 12px;font-weight:600;font-size:14px}
+.opt[disabled]{cursor:default}
+.card.ok{border-color:var(--ok);background:var(--okbg)}.card.bad{border-color:var(--bad);background:var(--badbg)}
+.fb{margin-top:6px;font-size:14px}
+.opt.chosen{background:var(--navy);color:#fff}
+.score{font-size:17px;color:var(--navy);font-weight:700}
+.summary{margin-top:14px;border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--soft)}
+@media (max-width:560px){.arrow{display:none}.step{flex-basis:100%}h1{font-size:19px}}
+</style></head><body><main class="wrap"><div class="kicker">Inteligencia de mercados · Semana 3</div><h1>Calculadora de tamaño muestral</h1><p class="instr">Ingrese los datos de su estudio. El resultado cambia al instante. Use la población finita solo si conoce el tamaño de su población.</p><div class="panel" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
+ <label>Tamaño de la población (N)<br><input id="N" type="number" min="0" placeholder="Déjelo vacío si es desconocida" style="width:100%;padding:8px"></label>
+ <label>Nivel de confianza<br><select id="conf" style="width:100%;padding:8px"><option value="1.645">90 % (Z = 1,645)</option><option value="1.96" selected>95 % (Z = 1,96)</option><option value="2.575">99 % (Z = 2,575)</option></select></label>
+ <label>Margen de error (%)<br><input id="e" type="number" value="10" min="1" max="30" step="0.5" style="width:100%;padding:8px"></label>
+ <label>Proporción esperada (p)<br><input id="p" type="number" value="0.5" min="0.05" max="0.95" step="0.05" style="width:100%;padding:8px"></label>
+ <label>Tasa de respuesta esperada (%)<br><input id="r" type="number" value="100" min="1" max="100" step="5" style="width:100%;padding:8px"></label></div>
+ <section class="summary" id="out" aria-live="polite"></section>
+ <p class="instr" style="margin-top:12px"><b>Importante:</b> este cálculo solo es válido para muestreo probabilístico. Si su muestreo es no probabilístico, use el resultado como referencia y declare la limitación en lugar de un margen de error.</p><p class="foot">Fórmulas de Arenal Laza (2026, pp. 95-96). Si no tiene información previa, use p = 0,5.</p></main><script>const DATA={};</script><script>
+const $=id=>document.getElementById(id);
+function calc(){const N=parseFloat($('N').value),Z=parseFloat($('conf').value),e=parseFloat($('e').value)/100,p=parseFloat($('p').value),r=parseFloat($('r').value)/100;
+if(!(e>0&&e<1&&p>0&&p<1)){$('out').innerHTML='Revise los valores ingresados.';return;}
+const n0=Z*Z*p*(1-p)/(e*e);let html='<p><b>Población infinita o desconocida:</b> n = '+Math.ceil(n0)+'</p>';let nf=null;
+if(N>0){nf=N*Z*Z*p*(1-p)/((N-1)*e*e+Z*Z*p*(1-p));html+='<p><b>Población finita (N = '+N+'):</b> n = '+Math.ceil(nf)+'</p>';}
+const base=Math.ceil(nf!==null?nf:n0);if(r>0&&r<=1)html+='<p><b>Contactos sugeridos</b> si espera que responda el '+Math.round(r*100)+' %: '+Math.ceil(base/r)+'</p>';
+$('out').innerHTML=html;}
+['N','conf','e','p','r'].forEach(i=>$(i).addEventListener('input',calc));calc();
+</script></body></html>
